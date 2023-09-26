@@ -74,6 +74,10 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use("/images", express.static(path.join(__dirname, "public/images")));
 
+app.get('/',(req,res)=>{
+  res.send('hello')
+})
+
 let intervalID;
 
 intervalID = setInterval(async() => {
