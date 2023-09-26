@@ -74,7 +74,7 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use("/images", express.static(path.join(__dirname, "public/images")));
 
-app.post('/',(req,res)=>{
+app.get('/',(req,res)=>{
   res.send('hello')
 })
 
