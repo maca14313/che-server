@@ -16,7 +16,7 @@ const cors=require('cors');
 const bcrypt=require('bcryptjs')
 const dotenv = require('dotenv').config();
 
-const jwt=require("jsonwebtoken")
+//const jwt=require("jsonwebtoken")
 const cookieParser=require("cookie-parser")
 
 const path = require("path");
@@ -1008,9 +1008,9 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
 
 
 
-const generateToken = (id) => {
+/*const generateToken = (id) => {
   return jwt.sign({ id },'aaaaaaa')
-}
+} */
 const PORT=process.env.PORT || 8000
 
 httpServer.listen(PORT,()=>{
