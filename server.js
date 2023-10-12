@@ -76,7 +76,8 @@ intervalID = setInterval(async() => {
 
                  db.query(`SELECT * FROM DriverData WHERE latitude!='0'`,(err,results)=>{
          if(err){
-          res.send(err)
+          //res.send(err)
+          console.log(err)
          }else{
           //console.log(results)
           results.map((result)=>{
