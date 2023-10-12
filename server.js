@@ -30,9 +30,9 @@ app.use(cookieParser())
 }) */
 const db=mysql.createConnection({
   host:"sql11.freemysqlhosting.net",
-  user:"sql11649180",
-  password:"g5PMzAuncH",
-  database:"sql11649180",
+  user:"sql11652843",
+  password:"rkshyIeDWE",
+  database:"sql11652843",
   charset : 'utf8mb4',
 }) 
 
