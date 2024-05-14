@@ -22,11 +22,11 @@ app.use(cookieParser())
 
 //ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '0925090339';
  const db=mysql.createConnection({
-  host:"localhost",
-  user:"root",
-  password:"0925090339",
-  database:"chedb",
-  charset : 'utf8mb4',
+        host:"sql11.freemysqlhosting.net",
+        user:"sql11703532",
+        password:"6Qpap3IMrS",
+        database:"sql11703532",
+        charset : 'utf8mb4',
 })
 /*
 const db=mysql.createConnection({
@@ -68,7 +68,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use("/images", express.static(path.join(__dirname, "public/images")));
 
 app.get('/',(req,res)=>{
-  res.send('hello from che server')
+  res.send('hello from che server 2')
 })
 
 
