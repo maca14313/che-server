@@ -21,20 +21,21 @@ app.use(cors());
 app.use(cookieParser())
 
 //ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '0925090339';
-/* const db=mysql.createConnection({
+ const db=mysql.createConnection({
   host:"localhost",
   user:"root",
   password:"0925090339",
   database:"chedb",
   charset : 'utf8mb4',
-}) */
+})
+/*
 const db=mysql.createConnection({
   host:"sql11.freemysqlhosting.net",
   user:"sql11652843",
   password:"rkshyIeDWE",
   database:"sql11652843",
   charset : 'utf8mb4',
-}) 
+}) */
 
 /*
 const db=mysql.createConnection({
@@ -67,13 +68,250 @@ app.use(express.urlencoded({ extended: false }))
 app.use("/images", express.static(path.join(__dirname, "public/images")));
 
 app.get('/',(req,res)=>{
-  res.send('hello')
+  res.send('hello from che server')
 })
 
+
+/*
+function PythagorasEquirectangular(lat1, lon1, lat2, lon2) {
+    // Convert latitude and longitude from degrees to radians
+    lat1 = lat1 * Math.PI / 180;
+    lat2 = lat2 * Math.PI / 180;
+    lon1 = lon1 * Math.PI / 180;
+    lon2 = lon2 * Math.PI / 180;
+
+    // Earth radius in meters
+    var R = 6371000;
+
+    // Calculate differences in longitude and latitude
+    var x = (lon2 - lon1) * Math.cos((lat1 + lat2) / 2);
+    var y = (lat2 - lat1);
+
+    // Calculate distance using Pythagorean theorem on equirectangular approximation
+    var d = Math.sqrt(x * x + y * y) * R;
+
+    // Return the calculated distance in meters
+    return d;
+}
+
+function greatCircleDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371000; // meter
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+    return distance;
+}
+
+function haversineDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371000; // meter
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+    return distance;
+}
+
+function vincentyDistance(lat1, lon1, lat2, lon2) {
+  const a = 6378137; // semi-major axis of the ellipsoid in meters
+  const f = 1 / 298.257223563; // flattening
+
+  const phi1 = lat1 * Math.PI / 180;
+  const phi2 = lat2 * Math.PI / 180;
+  const lambda1 = lon1 * Math.PI / 180;
+  const lambda2 = lon2 * Math.PI / 180;
+
+  const U1 = Math.atan((1 - f) * Math.tan(phi1));
+  const U2 = Math.atan((1 - f) * Math.tan(phi2));
+
+  const sinU1 = Math.sin(U1), cosU1 = Math.cos(U1);
+  const sinU2 = Math.sin(U2), cosU2 = Math.cos(U2);
+
+  let lambda = lambda2 - lambda1;
+  let lambdaP = 2 * Math.PI;
+
+  let sinLambda, cosLambda, sinSigma, cosSigma, sigma, sinAlpha, cosSqAlpha, cos2SigmaM;
+
+  while (Math.abs(lambda - lambdaP) > 1e-12) {
+      sinLambda = Math.sin(lambda);
+      cosLambda = Math.cos(lambda);
+      sinSigma = Math.sqrt((cosU2 * sinLambda) ** 2 + (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda) ** 2);
+      cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda;
+      sigma = Math.atan2(sinSigma, cosSigma);
+      sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma;
+      cosSqAlpha = 1 - sinAlpha ** 2;
+      cos2SigmaM = cosSigma - 2 * sinU1 * sinU2 / cosSqAlpha;
+
+      const C = f / 16 * cosSqAlpha * (4 + f * (4 - 3 * cosSqAlpha));
+      const lambdaPrev = lambda;
+      lambda = (lambda2 - lambda1) + (1 - C) * f * sinAlpha *
+          (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1 + 2 * cos2SigmaM ** 2)));
+
+      if (Math.abs(lambda - lambdaPrev) > 1e-12) {
+          lambdaP = lambdaPrev;
+      }
+  }
+
+  const uSq = cosSqAlpha * (a ** 2 - (a - f * a) ** 2) / ((a - f * a) ** 2);
+  const A = 1 + uSq / 16384 * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq)));
+  const B = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)));
+  const deltaSigma = B * sinSigma * (cos2SigmaM + B / 4 *
+      (cosSigma * (-1 + 2 * cos2SigmaM ** 2) - B / 6 * cos2SigmaM *
+          (-3 + 4 * sinSigma ** 2) * (-3 + 4 * cos2SigmaM ** 2)));
+
+  const s = (a - f * a) * A * (sigma - deltaSigma);
+
+  return s;
+}
+
+function vincentyDistance(lat1, lon1, lat2, lon2) {
+  const a = 6378137; // semi-major axis of the ellipsoid in meters
+  const f = 1 / 298.257223563; // flattening
+
+  const phi1 = lat1 * Math.PI / 180;
+  const phi2 = lat2 * Math.PI / 180;
+  const lambda1 = lon1 * Math.PI / 180;
+  const lambda2 = lon2 * Math.PI / 180;
+
+  const U1 = Math.atan((1 - f) * Math.tan(phi1));
+  const U2 = Math.atan((1 - f) * Math.tan(phi2));
+
+  const sinU1 = Math.sin(U1), cosU1 = Math.cos(U1);
+  const sinU2 = Math.sin(U2), cosU2 = Math.cos(U2);
+
+  let lambda = lambda2 - lambda1;
+  let lambdaP = 2 * Math.PI;
+
+  let sinLambda, cosLambda, sinSigma, cosSigma, sigma, sinAlpha, cosSqAlpha, cos2SigmaM;
+
+  while (Math.abs(lambda - lambdaP) > 1e-12) {
+      sinLambda = Math.sin(lambda);
+      cosLambda = Math.cos(lambda);
+      sinSigma = Math.sqrt((cosU2 * sinLambda) ** 2 + (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda) ** 2);
+      cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda;
+      sigma = Math.atan2(sinSigma, cosSigma);
+      sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma;
+      cosSqAlpha = 1 - sinAlpha ** 2;
+      cos2SigmaM = cosSigma - 2 * sinU1 * sinU2 / cosSqAlpha;
+
+      const C = f / 16 * cosSqAlpha * (4 + f * (4 - 3 * cosSqAlpha));
+      const lambdaPrev = lambda;
+      lambda = (lambda2 - lambda1) + (1 - C) * f * sinAlpha *
+          (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1 + 2 * cos2SigmaM ** 2)));
+
+      if (Math.abs(lambda - lambdaPrev) < 1e-12) {
+          break;
+      }
+  }
+
+  const uSq = cosSqAlpha * (a ** 2 - (a - f * a) ** 2) / ((a - f * a) ** 2);
+  const A = 1 + uSq / 16384 * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq)));
+  const B = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)));
+  const deltaSigma = B * sinSigma * (cos2SigmaM + B / 4 *
+      (cosSigma * (-1 + 2 * cos2SigmaM ** 2) - B / 6 * cos2SigmaM *
+          (-3 + 4 * sinSigma ** 2) * (-3 + 4 * cos2SigmaM ** 2)));
+
+  const s = (a - f * a) * A * (sigma - deltaSigma);
+
+  return s;
+}
+
+
+function karneyDistance(lat1, lon1, lat2, lon2) {
+  const a = 6378137; // semi-major axis of the ellipsoid in meters
+  const f = 1 / 298.257223563; // flattening
+
+  const phi1 = lat1 * (Math.PI / 180);
+  const phi2 = lat2 * (Math.PI / 180);
+  const lambda1 = lon1 * (Math.PI / 180);
+  const lambda2 = lon2 * (Math.PI / 180);
+
+  const sinPhi1 = Math.sin(phi1);
+  const cosPhi1 = Math.cos(phi1);
+  const sinPhi2 = Math.sin(phi2);
+  const cosPhi2 = Math.cos(phi2);
+
+  const deltaLambda = lambda2 - lambda1;
+  const cosDeltaLambda = Math.cos(deltaLambda);
+  const sinDeltaLambda = Math.sin(deltaLambda);
+
+  const numerator1 = cosPhi2 * sinDeltaLambda;
+  const numerator2 = cosPhi1 * sinPhi2 - sinPhi1 * cosPhi2 * cosDeltaLambda;
+  const numerator = Math.sqrt(numerator1 ** 2 + numerator2 ** 2);
+
+  const denominator1 = sinPhi1 * sinPhi2 + cosPhi1 * cosPhi2 * cosDeltaLambda;
+  const denominator2 = 1 + cosPhi1 * cosPhi2 * sinDeltaLambda;
+  const denominator = denominator1 / denominator2;
+
+  const sigma = Math.atan2(numerator, denominator);
+
+  const sinSigma = Math.sin(sigma);
+  const cosSigma = Math.cos(sigma);
+
+  const uSq = cosPhi1 * cosPhi2 * sinDeltaLambda;
+  const aSq = cosPhi1 * cosPhi2 * sinDeltaLambda;
+  const bSq = cosPhi1 * cosPhi2 * sinDeltaLambda;
+  const deltaSigma =
+      f / 16 * cosPhi1 * cosPhi2 * sinDeltaLambda *
+      (4 + f * (4 - 3 * cosPhi1 * cosPhi2 * sinDeltaLambda));
+
+  const s = a * (sigma - deltaSigma);
+
+  return s;
+}
+
+
+var distance = PythagorasEquirectangular(7.671068528629427, 36.837259055213664,7.671985183807098,36.83746289408595);
+var distance2 = greatCircleDistance(7.671068528629427, 36.837259055213664,7.671985183807098,36.83746289408595);
+var distance3 = haversineDistance(7.671068528629427, 36.837259055213664,7.671985183807098,36.83746289408595);
+var distance4 = vincentyDistance(7.671068528629427, 36.837259055213664,7.671985183807098,36.83746289408595);
+var distance5 = karneyDistance(7.671068528629427, 36.837259055213664,7.671985183807098,36.83746289408595);
+
+
+
+
+console.log(distance,'distance1') 
+console.log(distance2,'distance2') 
+console.log(distance3,'distance3') 
+console.log(distance4,'distance4') 
+console.log(distance5,'distance5') */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////exported   
+/*
 let intervalID;
 
 intervalID = setInterval(async() => {
-
                  db.query(`SELECT * FROM DriverData WHERE latitude!='0'`,(err,results)=>{
          if(err){
           //res.send(err)
@@ -94,7 +332,7 @@ intervalID = setInterval(async() => {
                       db.query(`UPDATE DriverData SET latitude=0,longitude=0,clientName='0',clientLat='0',
                                 clientLon='0',clientPhone='0',checkClient='0'
                      WHERE locDif>40 OR locDif<0  `,(err,data)=>{
-
+                         
                      })
                        
                       console.log('dif is',dif,'locDif',result.locDif,'latitude',result.latitude,'id',result.id)
@@ -109,14 +347,58 @@ intervalID = setInterval(async() => {
 
       })
  
-}, 5000);  
+}, 5000);  */
  
+app.post('/isdriveronline',async(req,res)=>{
+try {
+  console.log('isdriveronline')
+  db.query(`SELECT * FROM DriverData WHERE latitude!='0'`,(err,results)=>{
+    if(err){
+     //res.send(err)
+     console.log(err)
+    }else{
+     console.log(results,'isdriveronline')
+     results.map((result)=>{
+       var t1 = new Date();
+       var t2 = result.locUpdate;
+        var dif = (t1 - t2)/1000;
+      console.log('reset',result.locUpdate,dif)
+      db.query(`UPDATE DriverData SET locDif=${dif}
+                WHERE id=${result.id} `,(err,data)=>{
+                if (err) {
+                 console.log(err)
+                } else {
 
+                 db.query(`UPDATE DriverData SET latitude=0,longitude=0,clientName='0',clientLat='0',
+                           clientLon='0',clientPhone='0',checkClient='0'
+                WHERE locDif>40 OR locDif<0  `,(err,data)=>{
+                  if(data){
+
+                    res.json('ok')
+                   }
+                })
+                  
+                 console.log('dif is',dif,'locDif',result.locDif,'latitude',result.latitude,'id',result.id)
+                }
+
+})
+
+
+     })
+   
+    }
+
+ })
+} catch (error) {
+  console.log(error)
+}
+})
     
           
 
             //firsteRegister 
-             
+//////exported   
+         
 app.post('/registerdriver',async(req,res)=>{
 
   const salt = await bcrypt.genSalt(10)
@@ -173,7 +455,31 @@ app.post('/registerdriver',async(req,res)=>{
 })     
 
 
+app.get('/getdrivers',(req,res)=>{
+  db.query(`SELECT * FROM DriverData`,(err,result)=>{
+    try {
+      console.log(result,'all drivers')
+      res.json(result)
 
+    } catch (error) {
+      console.log(error)
+    }
+
+  })
+})
+
+////// exported
+app.get(`/searchbyname/:searchText`,(req,res)=>{
+  db.query(`SELECT * FROM DriverData WHERE name LIKE '${req.params.searchText}%' OR phoneNumber LIKE '${req.params.searchText}%'`,(err,result)=>{
+    if (result) {
+      console.log(result)
+      res.json(result)
+    }else{
+      res.json(err)
+      console.log(err)
+                }
+  })
+})
 
 app.get('/getdriver/:driverId',(req,res)=>{
   db.query(`SELECT * FROM DriverData WHERE driverId=${req.params.driverId}`,(err,result)=>{
@@ -185,36 +491,43 @@ app.get('/getdriver/:driverId',(req,res)=>{
 
 
    //driver login
+
+   ////// exported
+   
    app.post('/logindriver',async(req,res)=>{
 
     db.query(`SELECT * FROM DriverData WHERE driverId=${req.body.driverId}`,(err,data)=>{
  
  
-      const findDriver=data.map((info)=>{
+      try {
+        const findDriver=data.map((info)=>{
  
-       if(info && (bcrypt.compare(req.body.password,info.password))){
-         res.json({
-           name:info.name,
-           id:info.id,
-           fatherName:info.fatherName,
-           grandFatherName:info.grandFatherName,
-           phoneNumber:info.phoneNumber,
-           phoneNumber2:info.phoneNumber2,
-           carType:info.carType,
-           carPlate:info.carPlate,
-  
+          if(info && (bcrypt.compare(req.body.password,info.password))){
+            res.json({
+              name:info.name,
+              id:info.id,
+              fatherName:info.fatherName,
+              grandFatherName:info.grandFatherName,
+              phoneNumber:info.phoneNumber,
+              phoneNumber2:info.phoneNumber2,
+              carType:info.carType,
+              carPlate:info.carPlate,
+     
+            })
+          }else{
+            res.json({
+              match:'welcom',
+              tryAgen:'try another',
+      
+             })
+          }
+    
+    
+    
          })
-       }else{
-         res.json({
-           match:'welcom',
-           tryAgen:'try another',
-   
-          })
-       }
- 
- 
- 
-      })
+      } catch (error) {
+        console.log(error)
+      }
     })
  
     
@@ -223,7 +536,7 @@ app.get('/getdriver/:driverId',(req,res)=>{
  
 
  //senddriverlocation
-
+/// exported 
 app.post('/senddriverlocation/:id',async(req,res)=>{//,locUpdate=${Date.now()}
 
   const findDriverAndUpdate= await db.query(`UPDATE DriverData SET latitude=${req.body.latitude?req.body.latitude:0},longitude=${req.body.longitude?req.body.longitude:0},locUpdate=${Date.now()} 
@@ -251,6 +564,33 @@ app.post('/senddriverlocation/:id',async(req,res)=>{//,locUpdate=${Date.now()}
   
 })  
 
+
+
+app.post('/senddriverTrackinglocation/:id',async(req,res)=>{
+
+  const q="INSERT INTO Tracking_info (`driver_id`,`latitudeTracking`,`longitudeTracking`) VALUES (?)"
+  const values= [req.params.id,req.body.latitude,req.body.longitude];
+  
+      try {
+        db.query(q,[values],(err,data)=>{
+          if(data){ 
+           res.json('registerd')
+           console.log('ok')
+          }else{
+            res.json(err)
+            console.log(err)
+            
+          }
+          
+        })
+      } catch (error) {
+        res.json(error)
+        console.log(error,'senddriverTrackinglocation')
+      }
+}) 
+
+
+//// exeported
 app.get('/checkClient/:id',async(req,res)=>{
      try {
       db.query(`SELECT * FROM DriverData WHERE id=${req.params.id}`,(err,findClient)=>{
@@ -305,7 +645,7 @@ app.get('/checkClient/:id',async(req,res)=>{
 
 
 
-
+///// exported
 app.get('/senddatatoclientfromdriver/:id',async(req,res)=>{
 
 
@@ -324,8 +664,29 @@ app.get('/senddatatoclientfromdriver/:id',async(req,res)=>{
              console.log(err)
             res.send(err)
              }else{
-               console.log(data)
-              res.json('accept')
+               console.log(data,'accept')
+               //res.json('accept')
+               const q="INSERT INTO Ride_data (`driver_id`,`clientName`,`clientPhone`,`fromWhere`,`goTo`,`price`,`clientLon`,`clientLat`,`finished`) VALUES (?)"
+               const values= [data.map(d=>d.id),data.map(d=>d.clientName),data.map(d=>d.clientPhone),data.map(d=>d.fromWhere),data.map(d=>d.goTo),data.map(d=>d.price),data.map(d=>d.clientLon),data.map(d=>d.clientLat),'no'];
+               
+                   try {
+                     db.query(q,[values],(er,data)=>{
+                       if(data){ 
+                        res.json('accept')
+                        console.log('ok Ride_data')
+                       }else{
+                         res.json(er)
+                         console.log(er)
+                         
+                       }
+                       
+                     })
+                   } catch (error) {
+                     res.json(error)
+                     console.log(error,'senddriverTrackinglocation')
+                   }
+              
+              //res.json('accept')
              } 
    
           }
@@ -341,7 +702,7 @@ app.get('/senddatatoclientfromdriver/:id',async(req,res)=>{
    
   })
 
-
+/// exported
   app.get('/rejectedfromdriver/:id',async(req,res)=>{
 
 
@@ -405,7 +766,7 @@ app.get('/senddatatoclientfromdriver/:id',async(req,res)=>{
      
     }) */
 
-
+//// exported
     app.post('/clearclientinfo/:id',(req,res)=>{
       db.query(`UPDATE DriverData SET clientName='0',clientLat='0',
       clientLon='0',clientPhone='0',checkClient='0',latitude='0',longitude='0',finished=finished+1
@@ -425,7 +786,7 @@ app.get('/senddatatoclientfromdriver/:id',async(req,res)=>{
 
      })
 
-
+/// exported 
      app.post('/rejectedclientinfo/:id',(req,res)=>{
       db.query(`UPDATE DriverData SET clientName='0',clientLat='0',
       clientLon='0',clientPhone='0',checkClient='0',latitude='0',longitude='0'
@@ -445,6 +806,7 @@ app.get('/senddatatoclientfromdriver/:id',async(req,res)=>{
 
      })
 
+//// exported
      app.get('/checktogether/:driverphonenumber/:clientphone',async(req,res)=>{
        try {
         db.query(`SELECT * FROM ClientData WHERE clientPhoneNumber=${req.params.clientphone}`,(err,together)=>{
@@ -467,7 +829,7 @@ app.get('/senddatatoclientfromdriver/:id',async(req,res)=>{
      })
 
 
-
+/////////// exported
      app.get('/checktogetherfromclient/:clientphonenumber/:driverphone',async(req,res)=>{
       try {
        db.query(`SELECT * FROM DriverData WHERE phoneNumber='${req.params.driverphone}'`,(err,together)=>{
@@ -501,7 +863,7 @@ app.get('/senddatatoclientfromdriver/:id',async(req,res)=>{
 ///sendpassenger'slocation
 
 
-
+//////// exported
 app.post('/sendpassengerlocation/:zero/:clientPhone/:name',async(req,res)=>{
     
 
@@ -562,9 +924,9 @@ function NearestCity(latitude, longitude) {
 var minDif = 99999;
 var closest;
 
-for (index = 0; index < data.length; ++index) {
+for (let index = 0; index < data.length; ++index) {
 var dif = PythagorasEquirectangular(latitude, longitude, data[index].latitude, data[index].longitude);
-
+console.log(dif,'qwertyuiokjhgfdsasdvbnmnbvcdsryuoiuytredd')
 if (dif < minDif) {
   closest = index;
   minDif = dif;
@@ -652,7 +1014,7 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
 
                 ////////////////////////////////////////////////////////////////
                                   ////       MESSAGES 
-
+  /////////// exported
   app.post('/sendmessagefromdriver/:messageinput/:clientPhone',async(req,res)=>{
     console.log(req.params.messageinput)
      try {
@@ -675,7 +1037,7 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
      }
   })
 
-  
+  /////////// exported
   app.post('/sendmessagefromclient/:messageinput/:clientPhone',async(req,res)=>{
     console.log(req.params.messageinput)
       try {
@@ -713,6 +1075,7 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
     }
 }) */
 
+//// exported
   app.get('/checkmessagesfromclient/:clientPhone',async(req,res)=>{
      try {
        db.query(`SELECT * FROM ClientData WHERE clientPhoneNumber='${req.params.clientPhone}'`,(err,results)=>{
@@ -742,6 +1105,7 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
      }
   })
 
+  ///////// exported
   app.get('/checkmessagesfromdriver/:clientPhone',async(req,res)=>{
     try {
       db.query(`SELECT * FROM ClientData WHERE clientPhoneNumber='${req.params.clientPhone}'`,(err,results)=>{
@@ -769,6 +1133,7 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
     }
   })
 
+  //// exported
   app.get('/clearclientmessages/:clientPhone',async(req,res)=>{
     try {
 
@@ -787,7 +1152,7 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
   
   })
 
-
+  ///////// exported
   app.get('/cleardrivermessages/:clientPhone',async(req,res)=>{
     try {
 
@@ -812,6 +1177,7 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
 
                                              ///////////////  CLIENT REG
 
+//////// exported     
 
       app.post('/regclientdata',async(req,res)=>{
 
@@ -830,11 +1196,13 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
                 }else{
                  res.json({
                   clientName:req.body.clientName,
-                  clientPhoneNumber:req.body.clientPhoneNumber
+                  clientPhoneNumber:req.body.clientPhoneNumber,
+                  success:'yes'
                  })
                  console.log({
                   name:req.body.clientName,
-                  phonesOF:req.body.clientPhoneNumber
+                  phonesOF:req.body.clientPhoneNumber,
+                  success:'yes'
                  })
                   
                 }
@@ -845,7 +1213,6 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
               //console.log(err)
               //res.send(err)
              }else{
-                
               db.query(`UPDATE ClientData SET clientName='${req.body.clientName}'
               WHERE clientPhoneNumber=${req.body.clientPhoneNumber} `,(err,clientData)=>{
        
@@ -855,7 +1222,8 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
                  }else{
                   res.json({
                     clientName:req.body.clientName,
-                    clientPhoneNumber:req.body.clientPhoneNumber
+                    clientPhoneNumber:req.body.clientPhoneNumber,
+                    success:'yes'
                    })
                    console.log('notNew',findClient.length)
 
@@ -883,7 +1251,7 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
        
       })                          
 
-
+/////////// exported
 
       app.get('/checkdriveracceptance/:clientPhone',async(req,res)=>{
              
@@ -935,7 +1303,7 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
             
          
       })
-
+//////////// exported
        app.post('/resetride/:clientPhone',(req,res)=>{
         db.query(`UPDATE ClientData SET driverName='0',driverFatherName='0',
         driverPhoneNumber1='0',driverPhoneNumber2='0',
@@ -955,7 +1323,7 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
  
        })
 
-
+    //////////// exported
        app.post('/resetdriveracceptance/:clientPhone',(req,res)=>{
         db.query(`UPDATE ClientData SET driverAcceptance='0',driverId='0'
         WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,clientData)=>{
@@ -973,6 +1341,7 @@ WHERE clientPhoneNumber=${req.params.clientPhone} `,(err,data)=>{})
  
        })
 
+   ////exported
        app.post('/cancelsearch/:id',(req,res)=>{                                                                     
         db.query(`UPDATE DriverData SET checkClient=0,clientLat=0,clientLon=0,clientPhone=0,clientName=0,searching=0
         WHERE id=${req.params.id} `,(err,clientData)=>{
