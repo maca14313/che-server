@@ -352,33 +352,38 @@ try {
      console.log(err)
     }else{
      console.log(results,'isdriveronline')
-     results.map((result)=>{
-       var t1 = new Date();
-       var t2 = result.locUpdate;
-        var dif = (t1 - t2)/1000;
-      console.log('reset',result.locUpdate,dif)
-      db.query(`UPDATE DriverData SET locDif=${dif}
-                WHERE id=${result.id} `,(err,data)=>{
-                if (err) {
-                 console.log(err)
-                } else {
-
-                 db.query(`UPDATE DriverData SET latitude=0,longitude=0,clientName='0',clientLat='0',
-                           clientLon='0',clientPhone='0',checkClient='0'
-                WHERE locDif>40 OR locDif<0  `,(err,data)=>{
-                  if(data){
-
-                    res.json('ok')
-                   }
-                })
-                  
-                 console.log('dif is',dif,'locDif',result.locDif,'latitude',result.latitude,'id',result.id)
-                }
-
-})
-
-
-     })
+     if (results!=0) {
+      results.map((result)=>{
+        var t1 = new Date();
+        var t2 = result.locUpdate;
+         var dif = (t1 - t2)/1000;
+       console.log('reset',result.locUpdate,dif)
+       db.query(`UPDATE DriverData SET locDif=${dif}
+                 WHERE id=${result.id} `,(err,data)=>{
+                 if (err) {
+                  console.log(err)
+                 } else {
+ 
+                  db.query(`UPDATE DriverData SET latitude=0,longitude=0,clientName='0',clientLat='0',
+                            clientLon='0',clientPhone='0',checkClient='0'
+                 WHERE locDif>40 OR locDif<0  `,(err,data)=>{
+                   if(data){
+                     console.log('ok')
+                     res.json('ok')
+                    }
+                 })
+                   
+                  console.log('dif is',dif,'locDif',result.locDif,'latitude',result.latitude,'id',result.id)
+                 }
+ 
+ })
+ 
+ 
+      })
+     } else {
+      console.log('no driver')
+      res.json('no driver')
+     }
    
     }
 
