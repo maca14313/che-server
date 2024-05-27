@@ -21,21 +21,21 @@ app.use(cors());
 app.use(cookieParser())
 
 //ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '0925090339';
- const db=mysql.createConnection({
+  /* const db=mysql.createConnection({
   host:"localhost",
   user:"root",
   password:"0925090339",
   database:"chedb",
   charset : 'utf8mb4',
-})
-/*
-const db=mysql.createConnection({
-  host:"sql11.freemysqlhosting.net",
-  user:"sql11652843",
-  password:"rkshyIeDWE",
-  database:"sql11652843",
-  charset : 'utf8mb4',
 }) */
+
+const db=mysql.createConnection({
+  host:"sql7.freemysqlhosting.net",
+  user:"sql7709577",
+  password:"UrkuDiL2Zv",
+  database:"sql7709577",
+  charset : 'utf8mb4',
+}) 
 
 /*
 const db=mysql.createConnection({
@@ -65,7 +65,7 @@ db._protocol._delegateError = function(err, sequence){
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }))
 
-app.use("/images", express.static(path.join(__dirname, "public/images")));
+app.use("/images", express.static(path.join(__dirname, "public")));
 
 app.get('/',(req,res)=>{
   res.send('hello from che server')
