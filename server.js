@@ -20,15 +20,6 @@ const multer = require('multer');
 app.use(cors());
 app.use(cookieParser())
 
-//ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '0925090339';
-  /* const db=mysql.createConnection({
-  host:"localhost",
-  user:"root",
-  password:"0925090339",
-  database:"chedb",
-  charset : 'utf8mb4',
-}) */
-
 const db=mysql.createConnection({
   host:"sql7.freemysqlhosting.net",
   user:"sql7709577",
@@ -36,6 +27,9 @@ const db=mysql.createConnection({
   database:"sql7709577",
   charset : 'utf8mb4',
 }) 
+
+//ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '0925090339';
+
 
 /*
 const db=mysql.createConnection({
@@ -68,7 +62,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use("/images", express.static(path.join(__dirname, "public")));
 
 app.get('/',(req,res)=>{
-  res.send('hello from che server')
+  res.send('hello from che server 2')
 })
 
 
